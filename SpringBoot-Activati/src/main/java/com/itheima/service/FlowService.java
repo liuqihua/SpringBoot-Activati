@@ -4,13 +4,16 @@ import com.itheima.entity.FlowInfo;
 import com.itheima.entity.User;
 import com.itheima.mapper.FlowMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.repository.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -19,6 +22,9 @@ public class FlowService {
     private ActFlowCommService actFlowCommService;
     @Autowired
     private FlowMapper flowMapper;
+
+    @Autowired
+    private RepositoryService repositoryService;
     /**
      * 查询用户任务
      * @param userId
@@ -43,7 +49,17 @@ public class FlowService {
      * @return
      */
     public List<FlowInfo> findAllFlow() {
-        return flowMapper.selectFlowList();
+        List<Deployment> deploymentList = repositoryService.createDeploymentQuery().
+                orderByDeploymenTime().asc().list();
+            return  deploymentList.stream().map(deployment -> {
+                    FlowInfo flowInfo = new FlowInfo();
+                    flowInfo.setFlowkey(deployment.getKey());
+                    flowInfo.setCreatetime(deployment.getDeploymentTime());
+                    flowInfo.setFlowname(deployment.getName());
+                    flowInfo.setId(1L);
+                    flowInfo.setState(0);
+                    return flowInfo;
+                }).collect(Collectors.toList());
     }
 
     /**

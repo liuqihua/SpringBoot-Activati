@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class FlowController {
     @PutMapping("/flow/deployment/{id}")
     public Integer deployment(HttpServletRequest request, @PathVariable(name = "id")Long id){
         FlowInfo flowInfo = flowService.findOneFlow(id);
-        if(flowInfo.getState() == 0){
+        if(flowInfo == null && flowInfo.getState() == 0){
             return 2;
         }
         actFlowCommService.saveNewDeploy(flowInfo);
@@ -92,5 +93,9 @@ public class FlowController {
         String businessKey = "evection:"+id;
         actFlowCommService.searchHistory(businessKey);
         return null;
+    }
+    @GetMapping("/flow/findFlowPower/{}")
+    public Map<String,String> findFlowPower(){
+        return new HashMap<>();
     }
 }

@@ -2,7 +2,13 @@ package com.itheima.service;
 
 import com.itheima.entity.Evection;
 import com.itheima.mapper.EvectionMapper;
+import com.itheima.utils.CommonUtil;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +23,8 @@ public class EvectionService implements IActFlowCustomService{
     @Autowired
     private EvectionMapper evectionMapper;
 
+    @Autowired
+    private RuntimeService runtimeService;
 
     /**
      * 查询出差列表
@@ -42,8 +50,24 @@ public class EvectionService implements IActFlowCustomService{
      */
     @Transactional(rollbackFor = Exception.class)
     public int addEvection(Evection evection) {
-        int code = evectionMapper.save(evection);
-        return code;
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        evection.setAssignee(userDetails.getUsername());
+        ProcessInstance processInstance = null;
+        try {
+            Map<String, Object> map = CommonUtil.objectToMap(evection);
+            map.put("assignee",evection.getAssignee());
+            map.put("deployId",evection.getDeployId());
+
+            processInstance = runtimeService.startProcessInstanceById(evection.getDeployId(),"businessKey", map);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        processInstance.getName();
+
+//        int code = evectionMapper.save(evection);
+        return 1;
     }
     /**
      * 设置出差申请的 流程变量

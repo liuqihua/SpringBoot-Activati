@@ -9,7 +9,7 @@ import java.util.Date;
  * 出差申请
  */
 @Data
-public class Evection implements Serializable {
+public class Evection extends BaseParameter implements Serializable {
     /**
      * 主键id
      */

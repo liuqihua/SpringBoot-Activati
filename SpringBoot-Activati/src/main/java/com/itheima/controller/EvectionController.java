@@ -44,34 +44,35 @@ public class EvectionController {
      */
     @PostMapping("/evection/add")
     public void addEvection(HttpServletRequest request,@RequestBody  Evection evection){
-        Long userId = (Long)request.getSession().getAttribute("userid");
-        evection.setUserid(userId);
+//        Long userId = (Long)request.getSession().getAttribute("userid");
+//        evection.setUserid(userId);
         evection.setState(0);
+        evection.setDeployId("8b882148-8ff0-11ec-9617-005056c00008");
         int code = evectionService.addEvection(evection);
-        if(code ==1){
-            Long id = evection.getId();
-            String formKey = "evection";
-            String beanName = formKey + "Service";
+//        if(code ==1){
+//            Long id = evection.getId();
+//            String formKey = "evection";
+//            String beanName = formKey + "Service";
             //使用流程变量设置字符串（格式 ： Evection:Id 的形式）
             //使用正在执行对象表中的一个字段BUSINESS_KEY(Activiti提供的一个字段)，让启动的流程（流程实例）关联业务
-            String bussinessKey = formKey+":" +id;
-            ProcessInstance processInstance = actFlowCommService.startProcess(formKey, beanName, bussinessKey, id);
+//            String bussinessKey = formKey+":" +id;
+//            ProcessInstance processInstance = actFlowCommService.startProcess(formKey, beanName, bussinessKey, id);
             //		流程实例ID
-            String processDefinitionId = processInstance.getProcessDefinitionId();
-            log.info("processDefinitionId is {}",processDefinitionId);
-            List<Map<String, Object>> taskList = actFlowCommService.myTaskList(userId.toString());
-            if(!CollectionUtils.isEmpty(taskList)){
-                for (Map<String, Object> map : taskList) {
-                    if(map.get("assignee").toString().equals(userId.toString()) &&
-                            map.get("processDefinitionId").toString().equals(processDefinitionId)){
-                        log.info("processDefinitionId is {}",map.get("processDefinitionId").toString());
-                        log.info("taskid is {}",map.get("taskid").toString());
-                        actFlowCommService.completeProcess("同意",map.get("taskid").toString(),userId.toString());
-                    }
-
-                }
-            }
-        }
+//            String processDefinitionId = processInstance.getProcessDefinitionId();
+//            log.info("processDefinitionId is {}",processDefinitionId);
+//            List<Map<String, Object>> taskList = actFlowCommService.myTaskList(userId.toString());
+//            if(!CollectionUtils.isEmpty(taskList)){
+//                for (Map<String, Object> map : taskList) {
+//                    if(map.get("assignee").toString().equals(userId.toString()) &&
+//                            map.get("processDefinitionId").toString().equals(processDefinitionId)){
+//                        log.info("processDefinitionId is {}",map.get("processDefinitionId").toString());
+//                        log.info("taskid is {}",map.get("taskid").toString());
+//                        actFlowCommService.completeProcess("同意",map.get("taskid").toString(),userId.toString());
+//                    }
+//
+//                }
+//            }
+//        }
     }
 
 }
